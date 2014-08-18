@@ -18,8 +18,15 @@ use strict;
 use warnings;
 use Module::Build;
 use Config;
+
+# Variables below may have different settings depending on your environment:
+# Example:
+#   $LIBSTDF_CONFIG = "/path/to/libstdf-config";
+#   $LIBZZIP_DIR = "/path/to/libzzip";  
+
 my $LIBSTDF_CONFIG = "libstdf-config";
-my $LIBZZIP_DIR = undef;
+my $LIBZZIP_DIR = undef; 
+
 my $MIN_SWIG_VERSION = version->parse("2.0.4");
 my $MIN_LIBSTDF_VERSION = version->parse("0.4");
 
