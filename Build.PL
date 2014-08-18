@@ -18,9 +18,9 @@ use strict;
 use warnings;
 use Module::Build;
 use Config;
-use constant LIBSTDF_VERSION => 0.4;
-use constant MIN_SWIG_VERSION => 2.04;
 use constant LIBSTDF_CONFIG => 'libstdf-config';
+my $MIN_SWIG_VERSION = version->parse("2.0.4");
+my $MIN_LIBSTDF_VERSION = version->parse("0.4");
 
 check_libstdf();
 
@@ -227,7 +227,7 @@ sub try_cflags ($) {
 sub check_swig
 {
   print "Checking for SWIG...";
-  my $swig_version = `swig -version`;
+  my $swig_cmd = `swig -version`;
   if ($?)
   {
     my $errno = $? >> 8;
@@ -237,24 +237,22 @@ sub check_swig
     printf (" *** from http://www.swig.org\n");
     return(0);
   }
-  if ( $swig_version =~ m{(\d+)\.(\d+)\.(\d+)} )
+  my $swig_version;
+  if ( $swig_cmd =~ m{(\d+)\.(\d+)\.(\d+)} )
   {
-    $swig_version = "$1\.$2$3";
+    $swig_version = version->parse("$1\.$2\.$3");
   }
   else
   {
-    die "\nERROR: Unexpected swig version: $swig_version\n";
+    die "\nERROR: could not find swig version\n";
   }
-  if ( $swig_version < MIN_SWIG_VERSION ) 
+  if ( $swig_version < $MIN_SWIG_VERSION ) 
   {
-    if ($1 < MIN_SWIG_VERSION )
-	{
-	  printf ("\n");
-      printf (" *** You need to have swig %s or greater installed. (You have %s).\n", MIN_SWIG_VERSION,$swig_version);
-      printf (" *** I'll use the SWIG-generated file that comes with the distribution.\n");
-	  printf (" *** If you want SWIG, get it from http://www.swig.org\n");
-	  return(0);
-	}
+	printf ("\n");
+    printf (" *** You need to have swig %s or greater installed. (You have %s).\n", $MIN_SWIG_VERSION,$swig_version);
+    printf (" *** I'll use the SWIG-generated file that comes with the distribution.\n");
+	printf (" *** If you want SWIG, get it from http://www.swig.org\n");
+	return(0);
   }
 
   print " good, version $swig_version installed\n";
@@ -275,12 +273,12 @@ sub check_libstdf
   }
   $libstdf_version =~ s/^\s+//g;
   $libstdf_version =~ s/\s+$//g;
-  if ( $libstdf_version ne LIBSTDF_VERSION ) 
+  if ( $libstdf_version < $MIN_LIBSTDF_VERSION ) 
   {
-    die "\nERROR: libstdf version @{[LIBSTDF_VERSION]} must be installed.  You have $libstdf_version.\n".
-        "Get libstdf @{[LIBSTDF_VERSION]} from http://freestdf.sourceforge.net/\n";
+    die "\nERROR: libstdf version $MIN_LIBSTDF_VERSION or greater must be installed.  You have $libstdf_version.\n".
+        "Get libstdf $MIN_LIBSTDF_VERSION from http://freestdf.sourceforge.net/\n";
   }
-  printf "good, version @{[LIBSTDF_VERSION]} installed\n";
+  printf "good, version $libstdf_version installed\n";
 }
 
 
