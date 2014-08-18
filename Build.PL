@@ -155,8 +155,10 @@ sub check_c_compiler
     my $cc= shift;
     my $ccflags = ' '.get_libstdf_cflags();
 	my $ldflags = ' '.get_libstdf_libs();
+	my $rpath = ( $ldflags =~ /-L(.+?)\s+/ ) ? $1 : ""; 
     my $swig_flags=  ' '.get_libstdf_cflags();
-	$ccflags .= " -std=c99";
+	$ccflags .= " -std=c99 -m32";
+	$ldflags .= " -m32 -Xlinker -rpath $rpath";
 	return ($ccflags, $ldflags, $swig_flags);
 }
 
