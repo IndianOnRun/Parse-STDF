@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #  Copyright (C) 2014 Erick Jordan <ejordan@cpan.org>
 #
 #  This program is free software: you can redistribute it and/or modify
