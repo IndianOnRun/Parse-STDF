@@ -18,7 +18,8 @@ use strict;
 use warnings;
 use Module::Build;
 use Config;
-use constant LIBSTDF_CONFIG => 'libstdf-config';
+my $LIBSTDF_CONFIG = "libstdf-config";
+my $LIBZZIP_DIR = undef;
 my $MIN_SWIG_VERSION = version->parse("2.0.4");
 my $MIN_LIBSTDF_VERSION = version->parse("0.4");
 
@@ -157,8 +158,13 @@ sub check_c_compiler
 	my $ldflags = ' '.get_libstdf_libs();
 	my $rpath = ( $ldflags =~ /-L(.+?)\s+/ ) ? $1 : ""; 
     my $swig_flags=  ' '.get_libstdf_cflags();
-	$ccflags .= " -std=c99 -m32";
+	$ccflags .= " -std=c99 -m32"; 
 	$ldflags .= " -m32 -Xlinker -rpath $rpath";
+	if ( defined($LIBZZIP_DIR) )
+	{
+	  $ccflags .= " -I$LIBZZIP_DIR/include";
+	  $ldflags .= " -Xlinker -rpath $LIBZZIP_DIR/lib";
+	} 
 	return ($ccflags, $ldflags, $swig_flags);
 }
 
@@ -265,12 +271,12 @@ sub check_swig
 sub check_libstdf 
 {
   print "Checking for libstdf ... ";
-  my $libstdf_version = `@{[LIBSTDF_CONFIG]} --version 2>&1`;
+  my $libstdf_version = `$LIBSTDF_CONFIG --version 2>&1`;
   if ($?) 
   {
     my $errno = $? >> 8;
 	die "\nERROR: I don't see libstdf installed.  \n".
-	    "Please ensure libstdf is installed and @{[LIBSTDF_CONFIG]} is in your search path.  \n".
+	    "Please ensure libstdf is installed and $LIBSTDF_CONFIG is in your search path.  \n".
 		"Get libstdf from http://freestdf.sourceforge.net/\n";
   }
   $libstdf_version =~ s/^\s+//g;
@@ -286,7 +292,7 @@ sub check_libstdf
 
 sub get_libstdf_prefix # ()
 {
-  my $prefix = `@{[LIBSTDF_CONFIG]} --prefix`;
+  my $prefix = `$LIBSTDF_CONFIG --prefix`;
   $prefix =~ s/^\s+//g;
   $prefix =~ s/\s+$//g;
   return ( $prefix );
@@ -294,7 +300,7 @@ sub get_libstdf_prefix # ()
 
 sub get_libstdf_cflags # ()
 {
-  my $cflags = `@{[LIBSTDF_CONFIG]} --cflags`;
+  my $cflags = `$LIBSTDF_CONFIG --cflags`;
   $cflags =~ s/^\s+//g;
   $cflags =~ s/\s+$//g;
   return ( $cflags );
@@ -302,7 +308,7 @@ sub get_libstdf_cflags # ()
 
 sub get_libstdf_libs # ()
 {
-  my $libs = `@{[LIBSTDF_CONFIG]} --libs`;
+  my $libs = `$LIBSTDF_CONFIG --libs`;
   $libs =~ s/^\s+//g;
   $libs =~ s/\s+$//g;
   return ( $libs );
