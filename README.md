@@ -51,7 +51,16 @@ DEPENDENCIES
 * libstdf and development headers
 * C compiler
 * SWIG (optional)
-* RHEL Linux, Ubuntu
+* Unix OS
+
+
+TESTED PLATFORMS
+----------------
+
+The following platforms have been tested:
+
+* RHEL Linux 5.x, 6.x
+* Ubuntu 12.04 LTS
 
 
 COPYRIGHT AND LICENSE
