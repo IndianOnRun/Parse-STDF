@@ -168,6 +168,7 @@ sub check_c_compiler
     my $ccflags = ' '.get_libstdf_cflags();
 	my $ldflags = ' '.get_libstdf_libs();
 	my $rpath = ( $ldflags =~ /-L(.+?)\s+/ ) ? $1 : "";
+	$ccflags .= " -std=c99";
 	$ldflags .= " -Xlinker -rpath $rpath";
 	return ($ccflags, $ldflags, $swig_flags);
 }
