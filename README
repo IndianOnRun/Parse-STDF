@@ -16,7 +16,6 @@ the grunt work of reading and parsing binary data into STDF records represented 
 structs are in turn referenced as Perl objects.
 
 
-
 INSTALLATION
 ------------
 
