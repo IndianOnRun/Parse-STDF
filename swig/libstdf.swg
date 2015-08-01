@@ -21,6 +21,7 @@ extern stdf_file* stdf_open_ex(char*, unsigned int, unsigned int);
 extern rec_unknown* stdf_read_record_raw(stdf_file*);
 extern rec_unknown* stdf_parse_raw_record(rec_unknown*);
 extern ssize_t stdf_write_record(stdf_file*, void*);
+extern char* stdf_get_Vn_name(int);
 
 /* 
   Extended declarations
@@ -67,5 +68,5 @@ SV* xN1_to_RV( void* data, int len );
 SV* xU2_to_RV( void* data, int len );
 SV* xR4_to_RV( void* data, int len ); 
 SV* xCn_to_RV( void* data, int len );
-
+SV* xVn_to_RV( void* data, int len );
 

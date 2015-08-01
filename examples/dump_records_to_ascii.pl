@@ -27,7 +27,7 @@ BEGIN {
 use strict;
 use warnings;
 use Time::localtime;
-use Parse::STDF qw ( xU1_array_ref xU2_array_ref xN1_array_ref xR4_array_ref xCn_array_ref );
+use Parse::STDF qw ( xU1_array_ref xU2_array_ref xN1_array_ref xR4_array_ref xCn_array_ref xVn_array_ref );
 
 ( $#ARGV == 0 ) || die "Usage: $0 stdf\n";
 my $stdf = $ARGV[0];
@@ -412,7 +412,8 @@ while ( $s->get_record() )
   if ( $s->recname() eq "GDR" )
   {
 	my $gdr = $s->gdr();
-	# TODO
+    printf("\tFLD_CNT: %s\n", $gdr->{FLD_CNT});
+	print "\tGEN_DATA: ", join(", ",@{xVn_array_ref($gdr->{GEN_DATA}, $gdr->{FLD_CNT})}), "\n";
   }
 
 }

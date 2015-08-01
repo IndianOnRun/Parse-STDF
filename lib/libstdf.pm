@@ -88,6 +88,7 @@ package libstdf;
 *xU2_to_RV = *libstdfc::xU2_to_RV;
 *xR4_to_RV = *libstdfc::xR4_to_RV;
 *xCn_to_RV = *libstdfc::xCn_to_RV;
+*xVn_to_RV = *libstdfc::xVn_to_RV;
 *stdf_open = *libstdfc::stdf_open;
 *stdf_close = *libstdfc::stdf_close;
 *stdf_read_record = *libstdfc::stdf_read_record;
@@ -97,6 +98,7 @@ package libstdf;
 *stdf_read_record_raw = *libstdfc::stdf_read_record_raw;
 *stdf_parse_raw_record = *libstdfc::stdf_parse_raw_record;
 *stdf_write_record = *libstdfc::stdf_write_record;
+*stdf_get_Vn_name = *libstdfc::stdf_get_Vn_name;
 
 ############# Class : libstdf::dtc_Vn_ele ##############
 

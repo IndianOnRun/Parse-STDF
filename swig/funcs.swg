@@ -132,5 +132,97 @@ SV* xCn_to_RV( void* data, int len )
   return(result);
 }
 
+SV* xVn_to_RV( void* data, int len ) 
+{
+  SV **svs = (SV **) malloc(len*sizeof(SV*));
+  dtc_Vn v = (dtc_Vn) data;
+  for (int i=0; i < len; i++ ) {
+    switch ( v[i].type )
+	{ 
+	  case GDR_B0:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setpv( (SV*) svs[i], "(pad)" ); // special pad field 
+		break;
+	  }
+	  case GDR_N1:
+	  {
+	    unsigned char lo, hi;
+        svs[i] = sv_newmortal();
+        lo = *((unsigned char*) v[i].data);
+        lo <<= 4;
+        lo >>= 4;
+        sv_setuv((SV*) svs[i], lo );
+	  }
+	  case GDR_U1:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U1*) v[i].data) );
+		break;
+	  }
+	  case GDR_U2:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U2*) v[i].data) );
+		break;
+	  }
+	  case GDR_U4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U4*) v[i].data) );
+		break;
+	  }
+	  case GDR_I1:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I1*) v[i].data) );
+		break;
+	  }
+	  case GDR_I2:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I2*) v[i].data) );
+		break;
+	  }
+	  case GDR_I4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I4*) v[i].data) );
+		break;
+	  }
+	  case GDR_R4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setnv((SV*) svs[i], *((dtc_R4*) v[i].data) );
+		break;
+	  }
+	  case GDR_R8:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setnv((SV*) svs[i], *((dtc_R8*) v[i].data) );
+		break;
+	  }
+	  case GDR_Cn:
+	  {
+        svs[i] = sv_newmortal();
+        char* s = *((char**)v[i].data);
+        STRLEN l = (unsigned char) *s;
+        ( l > 0 ) ? sv_setpvn( (SV*) svs[i], s+1, l ) : sv_setpv( (SV*) svs[i], "" );
+		break;
+      }
+	  default:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setpv( (SV*) svs[i], "[??]" ); 
+		break;
+	  }
+	} 
+  }
+  AV *av = av_make(len,svs);
+  SV* result = newRV_noinc((SV*) av ); 
+  sv_2mortal(result);
+  return(result);
+}
+
 %}
 

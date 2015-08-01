@@ -1933,6 +1933,98 @@ SV* xCn_to_RV( void* data, int len )
   return(result);
 }
 
+SV* xVn_to_RV( void* data, int len ) 
+{
+  SV **svs = (SV **) malloc(len*sizeof(SV*));
+  dtc_Vn v = (dtc_Vn) data;
+  for (int i=0; i < len; i++ ) {
+    switch ( v[i].type )
+	{ 
+	  case GDR_B0:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setpv( (SV*) svs[i], "(pad)" ); // special pad field 
+		break;
+	  }
+	  case GDR_N1:
+	  {
+	    unsigned char lo, hi;
+        svs[i] = sv_newmortal();
+        lo = *((unsigned char*) v[i].data);
+        lo <<= 4;
+        lo >>= 4;
+        sv_setuv((SV*) svs[i], lo );
+	  }
+	  case GDR_U1:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U1*) v[i].data) );
+		break;
+	  }
+	  case GDR_U2:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U2*) v[i].data) );
+		break;
+	  }
+	  case GDR_U4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setuv((SV*) svs[i], *((dtc_U4*) v[i].data) );
+		break;
+	  }
+	  case GDR_I1:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I1*) v[i].data) );
+		break;
+	  }
+	  case GDR_I2:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I2*) v[i].data) );
+		break;
+	  }
+	  case GDR_I4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setiv((SV*) svs[i], *((dtc_I4*) v[i].data) );
+		break;
+	  }
+	  case GDR_R4:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setnv((SV*) svs[i], *((dtc_R4*) v[i].data) );
+		break;
+	  }
+	  case GDR_R8:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setnv((SV*) svs[i], *((dtc_R8*) v[i].data) );
+		break;
+	  }
+	  case GDR_Cn:
+	  {
+        svs[i] = sv_newmortal();
+        char* s = *((char**)v[i].data);
+        STRLEN l = (unsigned char) *s;
+        ( l > 0 ) ? sv_setpvn( (SV*) svs[i], s+1, l ) : sv_setpv( (SV*) svs[i], "" );
+		break;
+      }
+	  default:
+	  {
+        svs[i] = sv_newmortal();
+        sv_setpv( (SV*) svs[i], "[??]" ); 
+		break;
+	  }
+	} 
+  }
+  AV *av = av_make(len,svs);
+  SV* result = newRV_noinc((SV*) av ); 
+  sv_2mortal(result);
+  return(result);
+}
+
 
 
 SWIGINTERNINLINE SV *
@@ -3284,6 +3376,42 @@ XS(_wrap_xCn_to_RV) {
     } 
     arg2 = (int)(val2);
     result = (SV *)xCn_to_RV(arg1,arg2);
+    ST(argvi) = result; argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_xVn_to_RV) {
+  {
+    void *arg1 = (void *) 0 ;
+    int arg2 ;
+    int res1 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    SV *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: xVn_to_RV(data,len);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0),SWIG_as_voidptrptr(&arg1), 0, 0);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xVn_to_RV" "', argument " "1"" of type '" "void *""'"); 
+    }
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "xVn_to_RV" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+    result = (SV *)xVn_to_RV(arg1,arg2);
     ST(argvi) = result; argvi++ ;
     
     
@@ -23929,6 +24057,34 @@ XS(_wrap_stdf_write_record) {
 }
 
 
+XS(_wrap_stdf_get_Vn_name) {
+  {
+    int arg1 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int argvi = 0;
+    char *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: stdf_get_Vn_name(int);");
+    }
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "stdf_get_Vn_name" "', argument " "1"" of type '" "int""'");
+    } 
+    arg1 = (int)(val1);
+    result = (char *)stdf_get_Vn_name(arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -24188,6 +24344,7 @@ static swig_command_info swig_commands[] = {
 {"libstdfc::xU2_to_RV", _wrap_xU2_to_RV},
 {"libstdfc::xR4_to_RV", _wrap_xR4_to_RV},
 {"libstdfc::xCn_to_RV", _wrap_xCn_to_RV},
+{"libstdfc::xVn_to_RV", _wrap_xVn_to_RV},
 {"libstdfc::dtc_Vn_ele_type_set", _wrap_dtc_Vn_ele_type_set},
 {"libstdfc::dtc_Vn_ele_type_get", _wrap_dtc_Vn_ele_type_get},
 {"libstdfc::dtc_Vn_ele_data_set", _wrap_dtc_Vn_ele_data_set},
@@ -24805,6 +24962,7 @@ static swig_command_info swig_commands[] = {
 {"libstdfc::stdf_read_record_raw", _wrap_stdf_read_record_raw},
 {"libstdfc::stdf_parse_raw_record", _wrap_stdf_parse_raw_record},
 {"libstdfc::stdf_write_record", _wrap_stdf_write_record},
+{"libstdfc::stdf_get_Vn_name", _wrap_stdf_get_Vn_name},
 {0,0}
 };
 /* -----------------------------------------------------------------------------

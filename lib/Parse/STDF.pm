@@ -11,7 +11,7 @@ Parse::STDF - Module for parsing files in Standard Test Data Format
 
 =cut
 
-use version; $VERSION = qv('0.2.4');
+use version; $VERSION = qv('0.2.5');
 
 =pod
 
@@ -79,7 +79,7 @@ use libstdf;
 use vars qw($VERSION @EXPORT_OK @EXPORT @ISA);
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw( xU1_array_ref xU2_array_ref xN1_array_ref xR4_array_ref xCn_array_ref );
+@EXPORT_OK = qw( xU1_array_ref xU2_array_ref xN1_array_ref xR4_array_ref xCn_array_ref xVn_array_ref );
 
 =pod
 
@@ -806,6 +806,25 @@ sub gds # ()
 
 =pod
 
+=head2 gdr 
+
+   my $gdr = $s->gdr();
+   printf("\tFLD_CNT: %s\n", $gdr->{FLD_CNT});
+   print "\tGEN_DATA: ", join(", ",@{xVn_array_ref($gdr->{GEN_DATA}, $gdr->{FLD_CNT})}), "\n";
+
+Returns a hash reference to a GDR record object. 
+
+=cut
+
+sub gdr # ()
+{
+  my $self = shift;
+  return ( ($self->{recname} eq "GDR") ? libstdf::rec_to_gdr ($self->{rec}) : undef );
+}
+
+
+=pod
+
 =head2 unknown
 
    my $unk = $s->unknown();
@@ -870,6 +889,11 @@ Utility functions for converting C<libstdf> data types C<[xU1, xU2, xN1, xR4, xC
   my $plr = $s->plr();
   print "\tPGM_CHAR: ", join(", ",@{xCn_array_ref($plr->{PGM_CHAR}, $plr->{GRP_CNT})}), "\n";
 
+=item xVn_array_ref(xVn,len)
+
+  my $gdr = $s->gdr();
+  print "\tGEN_DATA: ", join(", ",@{xVn_array_ref($gdr->{GEN_DATA}, $gdr->{FLD_CNT})}), "\n";
+
 =back
 
 =cut
@@ -908,6 +932,13 @@ sub xCn_array_ref # ( $xCn , $len )
   my $xCn = shift;
   my $len = shift;
   return ( libstdf::xCn_to_RV($xCn, $len) );
+}
+
+sub xVn_array_ref # ( $xVn , $len )
+{
+  my $xVn = shift;
+  my $len = shift;
+  return ( libstdf::xVn_to_RV($xVn, $len) );
 }
 
 sub DESTROY #()
